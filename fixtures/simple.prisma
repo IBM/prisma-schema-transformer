@@ -1,0 +1,19 @@
+model posts {
+  id         Int      @default(autoincrement()) @id
+  title      String
+  content    String?
+  published  Boolean  @default(false)
+  author     users    @relation(fields: [author_id], references: [id])
+  author_id  Int
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+}
+
+model users {
+  id         Int      @default(autoincrement()) @id
+  email      String   @unique
+  weight     Float
+  posts      posts[]
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+}
