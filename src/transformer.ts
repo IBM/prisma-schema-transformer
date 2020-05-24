@@ -41,7 +41,11 @@ function transformModel(model: Model) {
 			if (kind === 'object' && relationFromFields && relationFromFields.length > 0 && relationToFields) {
 				draftField.relationFromFields = [camelcase(relationFromFields[0])];
 				draftField.relationToFields = [camelcase(relationToFields[0])];
-			}
+      }
+
+      if (name === 'updated_at') {
+        draftField.isUpdatedAt = true;
+      }
 		})) as DMMF.Field[]; // Force type conversion
 	});
 
