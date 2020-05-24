@@ -2,7 +2,11 @@
 
 > **EXPERIMENTAL**
 
-This project utilizes the [getDMMF](https://github.com/prisma/prisma/blob/023249752380976d797518e1350199895246d099/src/packages/sdk/src/engineCommands.ts#L45) method from `@prisma/sdk` to perform some post-processing work on generated Prisma schema, i.e, `snake_case` to `camelCase`, singularize or pluralize model and field name.
+This project utilizes the [getDMMF](https://github.com/prisma/prisma/blob/023249752380976d797518e1350199895246d099/src/packages/sdk/src/engineCommands.ts#L45) method from `@prisma/sdk` to perform some post-processing work on generated Prisma schema, including the following.
+
+- Transform `snake_case` to `camelCase`, 
+- Properly singularize or pluralize model and field name.
+- Add `@updatedAt` attribute to field in the event of column name is `updated_at`
 
 ## Install
 
@@ -52,5 +56,5 @@ It's hacky, but it works. Some test fixtures are taken from the `@prisma/sdk` re
 
 Manipulate the naming of Model and Field to follow the `camelCase` naming convention.
 
-- All Model names are singular
-- All field anems are singular by default with the following exception of many-to-many relations.
+- Model name is always singular.
+- Field name is singular by default with the execption of `many-to-many` relation.
