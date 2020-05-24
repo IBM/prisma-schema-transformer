@@ -23,10 +23,11 @@ function transformModel(model: Model) {
     const fields = draftModel.fields as Field[];
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 		draftModel.fields = fields.map(field => produce(field, draftField => {
-			const {name, kind, type, relationFromFields, relationToFields} = draftField;
+			const {name, kind, type, relationFromFields, relationToFields, isList} = draftField;
 
-			// Transform field name
-			draftField.name = camelcase(name);
+      // Transform field name
+      draftField.name = isList ? camelcase(name) : camelcase(pluralize(name, 1));
+
 			if (draftField.name !== name) {
 				draftField.columnName = name;
 			}
