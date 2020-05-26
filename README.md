@@ -8,6 +8,10 @@ This project utilizes the [getDMMF](https://github.com/prisma/prisma/blob/023249
 - Properly singularize or pluralize model and field name.
 - Add `@updatedAt` attribute to field in the event of column name is `updated_at`
 
+__TODO__
+
+- [ ] Auto generate the `generator` and `datasource` nodes.
+
 ## Install
 
 ```bash
@@ -58,3 +62,8 @@ Manipulate the naming of Model and Field to follow the `camelCase` naming conven
 
 - Model name is always singular.
 - Field name is singular by default with the execption of `many-to-many` relation.
+
+## License
+
+This project is [MIT licensed](./LICENSE).
+

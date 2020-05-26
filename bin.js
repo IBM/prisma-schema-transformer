@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const arg = require('arg');
+const {formatSchema} = require('@prisma/sdk');
 const pkg = require('./package.json');
 const {fixPrismaFile} = require('./dist');
 
@@ -49,7 +50,9 @@ const isPrint = args['--print'] || false;
 	if (isPrint) {
 		console.log(output);
 	} else {
-		fs.writeFileSync(schemaPath, output);
+    fs.writeFileSync(schemaPath, output);
+    const formatedOutput = await formatSchema({ schemaPath });
+    fs.writeFileSync(schemaPath, formatedOutput);
 	}
 
 	process.exit(0);
