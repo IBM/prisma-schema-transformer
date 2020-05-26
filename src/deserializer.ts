@@ -68,13 +68,15 @@ const handlers = type => {
 // Handler for Attributes
 // https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema/data-model#attributes
 function handleAttributes(attributes: Attribute, kind: DMMF.DatamodelFieldKind | DMMF.FieldKind, type: string) {
-	const {relationFromFields, relationToFields} = attributes;
+	const {relationFromFields, relationToFields, relationName} = attributes;
 	if (kind === 'scalar') {
 		return `${Object.keys(attributes).map(each => handlers(type)[each](attributes[each])).join(' ')}`;
 	}
 
 	if (kind === 'object' && relationFromFields) {
-		return relationFromFields.length > 0 ? `@relation(fields: [${relationFromFields}], references: [${relationToFields}])` : '';
+    return relationFromFields.length > 0
+      ? `@relation(name: "${relationName}", fields: [${relationFromFields}], references: [${relationToFields}])`
+      : `@relation(name: "${relationName}")`;
 	}
 
 	return '';
