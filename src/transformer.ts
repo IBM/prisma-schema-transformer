@@ -10,7 +10,7 @@ function singularizeModelName(modelName: string) {
 }
 
 function transformModel(model: Model) {
-	const {name} = model;
+	const {name, uniqueFields} = model;
 
 	const fixModelName = produce(model, draftModel => {
 		if (name !== singularizeModelName(name)) {
@@ -20,13 +20,13 @@ function transformModel(model: Model) {
 	});
 
 	const fixFieldsName = produce(fixModelName, draftModel => {
-    const fields = draftModel.fields as Field[];
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+		const fields = draftModel.fields as Field[];
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 		draftModel.fields = fields.map(field => produce(field, draftField => {
 			const {name, kind, type, relationFromFields, relationToFields, isList} = draftField;
 
-      // Transform field name
-      draftField.name = isList ? camelcase(name) : camelcase(pluralize(name, 1));
+			// Transform field name
+			draftField.name = isList ? camelcase(name) : camelcase(pluralize(name, 1));
 
 			if (draftField.name !== name) {
 				draftField.columnName = name;
@@ -41,15 +41,21 @@ function transformModel(model: Model) {
 			if (kind === 'object' && relationFromFields && relationFromFields.length > 0 && relationToFields) {
 				draftField.relationFromFields = [camelcase(relationFromFields[0])];
 				draftField.relationToFields = [camelcase(relationToFields[0])];
-      }
+			}
 
-      if (name === 'updated_at') {
-        draftField.isUpdatedAt = true;
-      }
+			if (name === 'updated_at') {
+				draftField.isUpdatedAt = true;
+			}
 		})) as DMMF.Field[]; // Force type conversion
 	});
 
-	return fixFieldsName;
+	const fixUniqueName = produce(fixFieldsName, draftModel => {
+		if (uniqueFields.length > 0) {
+			draftModel.uniqueFields = uniqueFields.map(eachUniqueField => eachUniqueField.map(each => camelcase(each)));
+		}
+	});
+
+	return fixUniqueName;
 }
 
 export function dmmfModelTransformer(models: Model[]): Model[] {

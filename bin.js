@@ -50,9 +50,9 @@ const isPrint = args['--print'] || false;
 	if (isPrint) {
 		console.log(output);
 	} else {
-    fs.writeFileSync(schemaPath, output);
-    const formatedOutput = await formatSchema({ schemaPath });
-    fs.writeFileSync(schemaPath, formatedOutput);
+		fs.writeFileSync(schemaPath, output);
+		const formatedOutput = await formatSchema({schemaPath});
+		fs.writeFileSync(schemaPath, formatedOutput);
 	}
 
 	process.exit(0);

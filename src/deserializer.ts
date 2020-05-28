@@ -36,7 +36,7 @@ export interface Attribute {
 }
 
 export interface Model extends DMMF.Model {
-	uniqueFields: string[];
+	uniqueFields: string[][];
 }
 
 const handlers = type => {
@@ -74,9 +74,9 @@ function handleAttributes(attributes: Attribute, kind: DMMF.DatamodelFieldKind |
 	}
 
 	if (kind === 'object' && relationFromFields) {
-    return relationFromFields.length > 0
-      ? `@relation(name: "${relationName}", fields: [${relationFromFields}], references: [${relationToFields}])`
-      : `@relation(name: "${relationName}")`;
+		return relationFromFields.length > 0 ?
+			`@relation(name: "${relationName}", fields: [${relationFromFields}], references: [${relationToFields}])` :
+			`@relation(name: "${relationName}")`;
 	}
 
 	return '';
@@ -98,8 +98,8 @@ function handleFields(fields: Field[]) {
 		}).join('\n');
 }
 
-function handleUniqueFieds(uniqueFields: string[]) {
-	return uniqueFields.length > 0 ? `@@unique([${uniqueFields.join(', ')}])` : '';
+function handleUniqueFieds(uniqueFields: string[][]) {
+	return uniqueFields.length > 0 ? uniqueFields.map(eachUniqueField => `@@unique([${eachUniqueField.join(', ')}])`).join('\n') : '';
 }
 
 function handleDbName(dbName: string | null) {
