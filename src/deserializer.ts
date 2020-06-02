@@ -50,7 +50,15 @@ const handlers = type => {
 				return '';
 			}
 
-			return `@default(${value.name}(${value.args}))`;
+			if (typeof (value) === 'object') {
+				return `@default(${value.name}(${value.args}))`;
+			}
+
+			if (typeof (value) === 'number') {
+				return `@default(${value})`;
+			}
+
+			throw new Error(`Unsupporter field attribute ${value}`);
 		},
 		isId: value => value ? '@id' : '',
 		isUnique: value => value ? '@unique' : '',
