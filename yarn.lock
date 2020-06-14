@@ -81,10 +81,17 @@
     "@nodelib/fs.scandir" "2.1.3"
     fastq "^1.6.0"
 
-"@prisma/cli@^2.0.0-beta.5":
-  version "2.0.0-beta.5"
-  resolved "https://registry.yarnpkg.com/@prisma/cli/-/cli-2.0.0-beta.5.tgz#9116e9ba08131fce47bb96d9bc19e8a443a2b893"
-  integrity sha512-Kl3IqOq6sYdajnLA034SLJxFCB0IxXcrSLYR8W9XTOyt3RRP/TCUPp5yBVfO9B21Kwe9YrFujTbSD2qQaDg1QA==
+"@prisma/cli@^2.0.0-beta.9":
+  version "2.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/@prisma/cli/-/cli-2.0.0-beta.9.tgz#b6b1651f8a54bd93dd015f356ea43fc3e1ed21cb"
+  integrity sha512-RN5SHWxguGdEcRl3eVur4ehsiI3Ra6Z0gtIKtF0laqfmQj0fgTAoT5ipWU8jOWAZA1FmSYCTfhZ5e1TOJscBUw==
+
+"@prisma/debug@2.0.0-beta.9":
+  version "2.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/@prisma/debug/-/debug-2.0.0-beta.9.tgz#2da4acf7bd78f0dcb19ed7014d9c1cd8b28a0112"
+  integrity sha512-OVm3Ufp7cCeM63FB1s/D6Ga2dHzHMEeQQJIEuFOv9A+PhGrSFfCaO3MdkspDCAgwtaBP2vhcRs0bsQHp2eE4jA==
+  dependencies:
+    debug "^4.1.1"
 
 "@prisma/engine-core@2.0.0-beta.5":
   version "2.0.0-beta.5"
@@ -122,7 +129,7 @@
     rimraf "^3.0.2"
     tempy "^0.5.0"
 
-"@prisma/generator-helper@2.0.0-beta.5", "@prisma/generator-helper@^2.0.0-beta.5":
+"@prisma/generator-helper@2.0.0-beta.5":
   version "2.0.0-beta.5"
   resolved "https://registry.yarnpkg.com/@prisma/generator-helper/-/generator-helper-2.0.0-beta.5.tgz#d1103eb4e07072ab4d843319249938b9968d211d"
   integrity sha512-pL25Wn7ybVrw74PI/smiNkKFhE/mVvHZsGCVq9sQxEJMV5KkCnb6DmWdE5EWsO5oiZpF74vgoV4XEZY9DGSscw==
@@ -132,6 +139,16 @@
     cross-spawn "^7.0.2"
     debug "4.1.1"
     isbinaryfile "^4.0.6"
+
+"@prisma/generator-helper@^2.0.0-beta.9":
+  version "2.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/@prisma/generator-helper/-/generator-helper-2.0.0-beta.9.tgz#5d3b430423629cf0f77b7a3f38528d709227041c"
+  integrity sha512-nn0u0SPP+EAQ5raOLBXnpeFG6YhxSECi/B1EmU8vAfBbcGpuHKtzZO0QxPvz94gcBeqqy8ubc5vkOJ2soEor/g==
+  dependencies:
+    "@prisma/debug" "2.0.0-beta.9"
+    "@types/cross-spawn" "^6.0.1"
+    chalk "^3.0.0"
+    cross-spawn "^7.0.2"
 
 "@prisma/get-platform@2.0.0-beta.5":
   version "2.0.0-beta.5"

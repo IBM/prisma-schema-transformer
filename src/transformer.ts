@@ -20,7 +20,7 @@ function transformModel(model: Model) {
 	});
 
 	const fixFieldsName = produce(fixModelName, draftModel => {
-		const fields = draftModel.fields as Field[];
+		const fields = draftModel.fields as unknown as Field[];
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 		draftModel.fields = fields.map(field => produce(field, draftField => {
 			const {name, kind, type, relationFromFields, relationToFields, isList} = draftField;

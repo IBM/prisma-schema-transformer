@@ -9,7 +9,8 @@ export interface Field {
 	isId: boolean;
 	type: string;
 	dbNames: string[] | null;
-	isGenerated: boolean;
+  isGenerated: boolean;
+  hasDefaultValue: boolean;
 	relationFromFields?: any[];
 	relationToFields?: any[];
 	relationOnDelete?: string;
@@ -64,7 +65,8 @@ const handlers = type => {
 		isUnique: value => value ? '@unique' : '',
 		dbNames: value => {},
 		relationToFields: value => {},
-		relationOnDelete: value => {},
+    relationOnDelete: value => {},
+    hasDefaultValue: value => {},
 		relationName: value => {},
 		isReadOnly: value => {},
 		isGenerated: value => {},
@@ -116,7 +118,7 @@ function handleDbName(dbName: string | null) {
 
 function deserializeModel(model: Model) {
 	const {name, uniqueFields, dbName} = model;
-	const fields = model.fields as Field[];
+	const fields = model.fields as unknown as Field[];
 
 	const output = `
 model ${name} {
