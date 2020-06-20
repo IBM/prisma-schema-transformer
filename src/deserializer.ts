@@ -9,8 +9,8 @@ export interface Field {
 	isId: boolean;
 	type: string;
 	dbNames: string[] | null;
-  isGenerated: boolean;
-  hasDefaultValue: boolean;
+	isGenerated: boolean;
+	hasDefaultValue: boolean;
 	relationFromFields?: any[];
 	relationToFields?: any[];
 	relationOnDelete?: string;
@@ -65,8 +65,8 @@ const handlers = type => {
 		isUnique: value => value ? '@unique' : '',
 		dbNames: value => {},
 		relationToFields: value => {},
-    relationOnDelete: value => {},
-    hasDefaultValue: value => {},
+		relationOnDelete: value => {},
+		hasDefaultValue: value => {},
 		relationName: value => {},
 		isReadOnly: value => {},
 		isGenerated: value => {},

@@ -17,3 +17,10 @@ test('deserialized model is identical with the input from blog schema', async t 
 	const outputSchema = await fixPrismaFile(schemaPath);
 	t.snapshot(outputSchema);
 });
+
+test('deserialized model is excluding users model', async t => {
+	const schemaPath = './fixtures/simple.prisma';
+
+	const outputSchema = await fixPrismaFile(schemaPath, ['users']);
+	t.snapshot(outputSchema);
+});

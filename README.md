@@ -29,13 +29,17 @@ Usage
   $ prisma-schema-transformer [options] [...args]
 
 Specify a schema:
-  $ prisma-schema-transformer ./schema.prisma'
+  $ prisma-schema-transformer ./schema.prisma
 
 Instead of saving the result to the filesystem, you can also print it
-  $ prisma-schema-transformer ./schema.prisma --print'
+  $ prisma-schema-transformer ./schema.prisma --print
+
+Exclude some models from the output
+  $ prisma-schema-transformer ./schema.prisma --deny knex_migrations --deny knex_migration_lock
 
 Options:
   --print   Do not save
+  --deny    Exlucde model from output
   --help    Help
   --version Version info
 ```
