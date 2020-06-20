@@ -7,6 +7,7 @@ This project utilizes the [getDMMF](https://github.com/prisma/prisma/blob/023249
 - Transform `snake_case` to `camelCase`, 
 - Properly singularize or pluralize model and field name.
 - Add `@updatedAt` attribute to field in the event of column name is `updated_at`
+- Ignore models from the schema.
 
 __TODO__
 
