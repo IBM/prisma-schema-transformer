@@ -33,9 +33,9 @@
     "lint": "xo --fix"
   },
   "dependencies": {
-    "@prisma/cli": "^2.0.0-beta.9",
-    "@prisma/generator-helper": "^2.0.0-beta.9",
-    "@prisma/sdk": "^2.0.0-beta.5",
+    "@prisma/cli": "^2.1.3",
+    "@prisma/generator-helper": "^2.1.3",
+    "@prisma/sdk": "^2.1.3",
     "arg": "^4.1.3",
     "camelcase": "^6.0.0",
     "immer": "^6.0.6",
