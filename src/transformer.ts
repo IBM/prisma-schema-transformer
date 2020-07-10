@@ -26,7 +26,7 @@ function transformModel(model: Model) {
 			const {name, kind, type, relationFromFields, relationToFields, isList} = draftField;
 
 			// Transform field name
-			draftField.name = isList ? camelcase(name) : camelcase(pluralize(name, 1));
+			draftField.name = isList ? camelcase(pluralize.plural(name)) : camelcase(pluralize.singular(name));
 
 			if (draftField.name !== name) {
 				draftField.columnName = name;
