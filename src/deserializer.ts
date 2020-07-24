@@ -59,6 +59,10 @@ const handlers = type => {
 				return `@default(${value})`;
 			}
 
+			if (typeof (value) === 'string') {
+				return `@default("${value}")`;
+			}
+
 			throw new Error(`Unsupporter field attribute ${value}`);
 		},
 		isId: value => value ? '@id' : '',
