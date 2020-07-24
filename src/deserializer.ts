@@ -112,6 +112,10 @@ function handleFields(fields: Field[]) {
 		}).join('\n');
 }
 
+function handleIdFields(idFields: string[]) {
+	return idFields.length > 0 ? `@@id([${idFields.join(', ')}])` : '';
+}
+
 function handleUniqueFieds(uniqueFields: string[][]) {
 	return uniqueFields.length > 0 ? uniqueFields.map(eachUniqueField => `@@unique([${eachUniqueField.join(', ')}])`).join('\n') : '';
 }
@@ -121,7 +125,7 @@ function handleDbName(dbName: string | null) {
 }
 
 function deserializeModel(model: Model) {
-	const {name, uniqueFields, dbName} = model;
+	const {name, uniqueFields, dbName, idFields} = model;
 	const fields = model.fields as unknown as Field[];
 
 	const output = `
@@ -129,6 +133,7 @@ model ${name} {
 ${handleFields(fields)}
 ${handleUniqueFieds(uniqueFields)}
 ${handleDbName(dbName)}
+${handleIdFields(idFields)}
 }`;
 	return output;
 }

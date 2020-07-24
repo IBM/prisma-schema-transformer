@@ -10,7 +10,7 @@ function singularizeModelName(modelName: string) {
 }
 
 function transformModel(model: Model) {
-	const {name, uniqueFields} = model;
+	const {name, uniqueFields, idFields} = model;
 
 	const fixModelName = produce(model, draftModel => {
 		if (name !== singularizeModelName(name)) {
@@ -55,7 +55,13 @@ function transformModel(model: Model) {
 		}
 	});
 
-	return fixUniqueName;
+	const fixIdFieldsName = produce(fixUniqueName, draftModel => {
+		if (idFields.length > 0) {
+			draftModel.idFields = idFields.map(eachIdField => camelcase(eachIdField));
+		}
+	});
+
+	return fixIdFieldsName;
 }
 
 export function dmmfModelTransformer(models: Model[]): Model[] {
