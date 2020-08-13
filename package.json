@@ -29,7 +29,7 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc -p tscconfig.json",
-    "test": "ava",
+    "test": "DATABASE_URL=postgresql://localhost:5432/prisma ava",
     "lint": "xo --fix"
   },
   "dependencies": {
