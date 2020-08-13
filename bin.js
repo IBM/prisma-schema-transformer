@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+require('dotenv').config();
 const fs = require('fs');
 const arg = require('arg');
 const {formatSchema} = require('@prisma/sdk');

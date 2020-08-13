@@ -1,4 +1,4 @@
-import {DMMF} from '@prisma/generator-helper/dist';
+import {ConnectorType, DataSource, DMMF, EnvValue, GeneratorConfig} from '@prisma/generator-helper/dist';
 
 export interface Field {
 	kind: DMMF.DatamodelFieldKind | DMMF.FieldKind;
@@ -124,6 +124,24 @@ function handleDbName(dbName: string | null) {
 	return dbName ? `@@map("${dbName}")` : '';
 }
 
+function handleUrl(envValue: EnvValue) {
+	const value = envValue.fromEnvVar ? `env("${envValue.fromEnvVar}")` : envValue.value;
+
+	return `url = ${value}`;
+}
+
+function handleProvider(provider: ConnectorType | string) {
+	return `provider = "${provider}"`;
+}
+
+function handleOutput(path: string | null) {
+	return path ? `output = "${path}"` : '';
+}
+
+function handleBinaryTargets(binaryTargets?: string[]) {
+	return binaryTargets?.length ? `binaryTargets = ${JSON.stringify(binaryTargets)}` : '';
+}
+
 function deserializeModel(model: Model) {
 	const {name, uniqueFields, dbName, idFields} = model;
 	const fields = model.fields as unknown as Field[];
@@ -138,9 +156,38 @@ ${handleIdFields(idFields)}
 	return output;
 }
 
+function deserializeDatasource(datasource: DataSource) {
+	const {activeProvider: provider, name, url} = datasource;
+
+	return `
+datasource ${name} {
+${handleProvider(provider)}
+${handleUrl(url)}
+}`;
+}
+
+function deserializeGenerator(generator: GeneratorConfig) {
+	const {binaryTargets, name, output, provider} = generator;
+
+	return `
+generator ${name} {
+${handleProvider(provider)}
+${handleOutput(output)}
+${handleBinaryTargets(binaryTargets)}
+}`;
+}
+
 /**
  * Deserialize DMMF.Model[] into prisma schema file
  */
 export async function dmmfModelsdeserializer(models: Model[]) {
 	return models.map(model => deserializeModel(model)).join('\n');
+}
+
+export async function datasourcesDeserializer(datasources: DataSource[]) {
+	return datasources.map(datasource => deserializeDatasource(datasource)).join('\n');
+}
+
+export async function generatorsDeserializer(generators: GeneratorConfig[]) {
+	return generators.map(generator => deserializeGenerator(generator)).join('\n');
 }
