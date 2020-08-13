@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import {getDMMF} from '@prisma/sdk';
-import {dmmfModelsdeserializer, dmmfModelTransformer, Model} from '.';
+import {getDMMF, getConfig} from '@prisma/sdk';
+import {datasourcesDeserializer, dmmfModelsdeserializer, dmmfModelTransformer, generatorsDeserializer, Model} from '.';
 
 /**
  *
@@ -10,13 +10,21 @@ import {dmmfModelsdeserializer, dmmfModelTransformer, Model} from '.';
 export async function fixPrismaFile(schemaPath: string, denyList: readonly string[] = []) {
 	const schema = fs.readFileSync(schemaPath, 'utf-8');
 	const dmmf = await getDMMF({datamodel: schema});
+	const config = await getConfig({datamodel: schema});
+
 	const models = dmmf.datamodel.models as Model[];
+	const datasources = config.datasources;
+	const generators = config.generators;
+
 	const filteredModels = models.filter(each => !denyList.includes(each.name));
-
 	const transformedModels = dmmfModelTransformer(filteredModels);
-	const outputSchema = await dmmfModelsdeserializer(transformedModels);
 
-	return outputSchema;
+	let outputSchema = '';
+	outputSchema += await datasourcesDeserializer(datasources);
+	outputSchema += await generatorsDeserializer(generators);
+	outputSchema += await dmmfModelsdeserializer(transformedModels);
+	
+	return outputSchema
 }
 
 export * from './deserializer';
