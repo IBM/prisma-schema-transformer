@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import {getDMMF, getConfig} from '@prisma/sdk';
-import {datasourcesDeserializer, dmmfModelsdeserializer, dmmfModelTransformer, generatorsDeserializer, Model} from '.';
+import {datasourcesDeserializer, dmmfModelsdeserializer, dmmfEnumsDeserializer, dmmfModelTransformer, dmmfEnumTransformer, generatorsDeserializer, Model} from '.';
 
 /**
  *
@@ -17,12 +17,16 @@ export async function fixPrismaFile(schemaPath: string, denyList: readonly strin
 	const generators = config.generators;
 
 	const filteredModels = models.filter(each => !denyList.includes(each.name));
+	const filteredEnums = dmmf.datamodel.enums.filter(each => !denyList.includes(each.name));
 	const transformedModels = dmmfModelTransformer(filteredModels);
+	const transformedEnums = dmmfEnumTransformer(filteredEnums);
 
-	let outputSchema = '';
-	outputSchema += await datasourcesDeserializer(datasources);
-	outputSchema += await generatorsDeserializer(generators);
-	outputSchema += await dmmfModelsdeserializer(transformedModels);
+	let outputSchema = [
+		await datasourcesDeserializer(datasources),
+		await generatorsDeserializer(generators),
+		await dmmfModelsdeserializer(transformedModels),
+		await dmmfEnumsDeserializer(transformedEnums)
+	].filter(e => e).join('\n\n\n')
 	
 	return outputSchema
 }

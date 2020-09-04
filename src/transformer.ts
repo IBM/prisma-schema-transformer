@@ -37,6 +37,11 @@ function transformModel(model: Model) {
 				draftField.type = singularizeModelName(type);
 			}
 
+			// Enum
+			if (kind === 'enum' && type !== singularizeModelName(type)) {
+				draftField.type = singularizeModelName(type);
+			}
+
 			// Object kind, with @relation attributes
 			if (kind === 'object' && relationFromFields && relationFromFields.length > 0 && relationToFields) {
 				draftField.relationFromFields = [camelcase(relationFromFields[0])];
@@ -64,6 +69,37 @@ function transformModel(model: Model) {
 	return fixIdFieldsName;
 }
 
+function transformEnum(enumm: DMMF.DatamodelEnum) {
+	const { name } = enumm;
+
+	const fixModelName = produce(enumm, draftModel => {
+		if (name !== singularizeModelName(name)) {
+			draftModel.name = singularizeModelName(name);
+			draftModel.dbName = name;
+		}
+	});
+
+	const fixFieldsName = produce(fixModelName, draftModel => {
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+		draftModel.values = draftModel.values.map(field => produce(field, draftField => {
+			const {name, dbName} = draftField;
+
+			// Transform field name
+			draftField.name = camelcase(pluralize.singular(name));
+
+			if (draftField.name !== name) {
+				draftField.dbName = dbName || name;
+			}
+		}));
+	});
+
+	return fixFieldsName;
+}
+
 export function dmmfModelTransformer(models: Model[]): Model[] {
 	return models.map(model => transformModel(model));
+}
+
+export function dmmfEnumTransformer(enums: DMMF.DatamodelEnum[]): DMMF.DatamodelEnum[] {
+	return enums.map(each => transformEnum(each));
 }

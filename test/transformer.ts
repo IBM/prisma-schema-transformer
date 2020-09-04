@@ -2,7 +2,7 @@ import test from 'ava';
 import * as fs from 'fs';
 import {getDMMF} from '@prisma/sdk';
 
-import {dmmfModelsdeserializer, Model} from '../src';
+import {dmmfModelsdeserializer, Model, dmmfEnumsDeserializer} from '../src';
 
 test('transform model name from snake_case to camelCase from simple schema', async t => {
 	const schemaPath = './fixtures/simple.prisma';
@@ -24,7 +24,10 @@ test('transform model name from snake_case to camelCase from blog schema', async
 	const dmmf = await getDMMF({datamodel: schema});
 	const models = dmmf.datamodel.models as Model[];
 
-	const outputSchema = await dmmfModelsdeserializer(models);
+	const outputSchema = [
+		await dmmfModelsdeserializer(models),
+		await dmmfEnumsDeserializer(dmmf.datamodel.enums)
+	].join('\n\n\n')
 	const outpuDmmf = await getDMMF({datamodel: outputSchema});
 
 	t.deepEqual(outpuDmmf.datamodel, dmmf.datamodel);
