@@ -40,9 +40,13 @@ export interface Model extends DMMF.Model {
 	uniqueFields: string[][];
 }
 
-const handlers = type => {
+const handlers = (type, kind) => {
 	return {
 		default: value => {
+			if (kind === 'enum') {
+				return `@default(${value})`;
+			}
+
 			if (type === 'Boolean') {
 				return `@default(${value})`;
 			}
@@ -63,7 +67,7 @@ const handlers = type => {
 				return `@default("${value}")`;
 			}
 
-			throw new Error(`Unsupporter field attribute ${value}`);
+			throw new Error(`Unsupported field attribute ${value}`);
 		},
 		isId: value => value ? '@id' : '',
 		isUnique: value => value ? '@unique' : '',
@@ -84,7 +88,7 @@ const handlers = type => {
 function handleAttributes(attributes: Attribute, kind: DMMF.DatamodelFieldKind | DMMF.FieldKind, type: string) {
 	const {relationFromFields, relationToFields, relationName} = attributes;
 	if (kind === 'scalar') {
-		return `${Object.keys(attributes).map(each => handlers(type)[each](attributes[each])).join(' ')}`;
+		return `${Object.keys(attributes).map(each => handlers(type, kind)[each](attributes[each])).join(' ')}`;
 	}
 
 	if (kind === 'object' && relationFromFields) {
@@ -92,6 +96,9 @@ function handleAttributes(attributes: Attribute, kind: DMMF.DatamodelFieldKind |
 			`@relation(name: "${relationName}", fields: [${relationFromFields}], references: [${relationToFields}])` :
 			`@relation(name: "${relationName}")`;
 	}
+
+	if (kind && 'enum')
+		return `${Object.keys(attributes).map(each => handlers(type, kind)[each](attributes[each])).join(' ')}`;
 
 	return '';
 }
@@ -105,6 +112,10 @@ function handleFields(fields: Field[]) {
 			}
 
 			if (kind === 'object') {
+				return `  ${name} ${type}${isList ? '[]' : (isRequired ? '' : '?')} ${handleAttributes(attributes, kind, type)}`;
+			}
+
+			if (kind === 'enum') {
 				return `  ${name} ${type}${isList ? '[]' : (isRequired ? '' : '?')} ${handleAttributes(attributes, kind, type)}`;
 			}
 
@@ -161,8 +172,8 @@ function deserializeDatasource(datasource: DataSource) {
 
 	return `
 datasource ${name} {
-${handleProvider(provider)}
-${handleUrl(url)}
+	${handleProvider(provider)}
+	${handleUrl(url)}
 }`;
 }
 
@@ -171,9 +182,23 @@ function deserializeGenerator(generator: GeneratorConfig) {
 
 	return `
 generator ${name} {
-${handleProvider(provider)}
-${handleOutput(output)}
-${handleBinaryTargets(binaryTargets)}
+	${handleProvider(provider)}
+	${handleOutput(output)}
+	${handleBinaryTargets(binaryTargets)}
+}`;
+}
+
+function deserializeEnum({name, values, dbName}: DMMF.DatamodelEnum) {
+	const outputValues = values.map(({ name, dbName }) => {
+		let result = name
+		if (name !== dbName && dbName)
+			result += `@map("${dbName}")`
+		return result
+	})
+	return `
+enum ${name} {
+	${outputValues.join('\n\t')}
+	${handleDbName(dbName || null)}
 }`;
 }
 
@@ -190,4 +215,8 @@ export async function datasourcesDeserializer(datasources: DataSource[]) {
 
 export async function generatorsDeserializer(generators: GeneratorConfig[]) {
 	return generators.map(generator => deserializeGenerator(generator)).join('\n');
+}
+
+export async function dmmfEnumsDeserializer(enums: DMMF.DatamodelEnum[]) {
+	return enums.map(each => deserializeEnum(each)).join('\n');
 }

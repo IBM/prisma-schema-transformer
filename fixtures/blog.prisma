@@ -26,6 +26,7 @@ model Post {
   content   String?
   authorId  String?
   author    User?    @relation(fields: [authorId], references: [id])
+  status    PostStatuses
   Like      Like[]
 }
 
@@ -37,4 +38,9 @@ model Like {
   post   Post   @relation(fields: [postId], references: [id])
 
   @@unique([userId, postId])
+}
+
+enum PostStatuses {
+  hidden
+  visible
 }
