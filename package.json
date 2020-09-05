@@ -1,7 +1,7 @@
 {
   "name": "prisma-schema-transformer",
   "description": "Transform names from snake_case to camelCase in Prisma schema.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "repository": "https://github.com/IBM/prisma-schema-transformer",
   "author": {
     "name": "Michael Lin",
