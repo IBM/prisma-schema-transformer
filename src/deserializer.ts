@@ -76,6 +76,7 @@ const handlers = (type, kind) => {
 		relationOnDelete: value => {},
 		hasDefaultValue: value => {},
 		relationName: value => {},
+		documentation: value => {},
 		isReadOnly: value => {},
 		isGenerated: value => {},
 		isUpdatedAt: value => value ? '@updatedAt' : '',
