@@ -40,6 +40,8 @@ function transformModel(model: Model) {
 			// Enum
 			if (kind === 'enum' && type !== singularizeModelName(type)) {
 				draftField.type = singularizeModelName(type);
+				if (draftField.default)
+					draftField.default = camelcase(draftField.default)
 			}
 
 			// Object kind, with @relation attributes
