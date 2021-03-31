@@ -1,177 +1,177 @@
-import {ConnectorType, DataSource, DMMF, EnvValue, GeneratorConfig} from '@prisma/generator-helper/dist';
+import { ConnectorType, DataSource, DMMF, EnvValue, GeneratorConfig } from '@prisma/generator-helper/dist';
 
 export interface Field {
-	kind: DMMF.DatamodelFieldKind | DMMF.FieldKind;
-	name: string;
-	isRequired: boolean;
-	isList: boolean;
-	isUnique: boolean;
-	isId: boolean;
-	type: string;
-	dbNames: string[] | null;
-	isGenerated: boolean;
-	hasDefaultValue: boolean;
-	relationFromFields?: any[];
-	relationToFields?: any[];
-	relationOnDelete?: string;
-	relationName?: string;
-	default: boolean | any;
-	isUpdatedAt: boolean;
-	isReadOnly: string;
-	columnName?: string;
+  kind: DMMF.Datamodel | DMMF.FieldKind;
+  name: string;
+  isRequired: boolean;
+  isList: boolean;
+  isUnique: boolean;
+  isId: boolean;
+  type: string;
+  dbNames: string[] | null;
+  isGenerated: boolean;
+  hasDefaultValue: boolean;
+  relationFromFields?: any[];
+  relationToFields?: any[];
+  relationOnDelete?: string;
+  relationName?: string;
+  default: boolean | any;
+  isUpdatedAt: boolean;
+  isReadOnly: string;
+  columnName?: string;
 }
 
 export interface Attribute {
-	isUnique: boolean;
-	isId: boolean;
-	dbNames: string[] | null;
-	relationFromFields?: any[];
-	relationToFields?: any[];
-	relationOnDelete?: string;
-	relationName?: string;
-	isReadOnly: string;
-	default?: boolean | any;
-	isGenerated: boolean;
-	isUpdatedAt: boolean;
-	columnName?: string;
+  isUnique: boolean;
+  isId: boolean;
+  dbNames: string[] | null;
+  relationFromFields?: any[];
+  relationToFields?: any[];
+  relationOnDelete?: string;
+  relationName?: string;
+  isReadOnly: string;
+  default?: boolean | any;
+  isGenerated: boolean;
+  isUpdatedAt: boolean;
+  columnName?: string;
 }
 
 export interface Model extends DMMF.Model {
-	uniqueFields: string[][];
+  uniqueFields: string[][];
 }
 
 const handlers = (type, kind) => {
-	return {
-		default: value => {
-			if (kind === 'enum') {
-				return `@default(${value})`;
-			}
+  return {
+    default: value => {
+      if (kind === 'enum') {
+        return `@default(${value})`;
+      }
 
-			if (type === 'Boolean') {
-				return `@default(${value})`;
-			}
+      if (type === 'Boolean') {
+        return `@default(${value})`;
+      }
 
-			if (!value) {
-				return '';
-			}
+      if (!value) {
+        return '';
+      }
 
-			if (typeof (value) === 'object') {
-				return `@default(${value.name}(${value.args}))`;
-			}
+      if (typeof (value) === 'object') {
+        return `@default(${value.name}(${value.args}))`;
+      }
 
-			if (typeof (value) === 'number') {
-				return `@default(${value})`;
-			}
+      if (typeof (value) === 'number') {
+        return `@default(${value})`;
+      }
 
-			if (typeof (value) === 'string') {
-				return `@default("${value}")`;
-			}
+      if (typeof (value) === 'string') {
+        return `@default("${value}")`;
+      }
 
-			throw new Error(`Unsupported field attribute ${value}`);
-		},
-		isId: value => value ? '@id' : '',
-		isUnique: value => value ? '@unique' : '',
-		dbNames: value => {},
-		relationToFields: value => {},
-		relationOnDelete: value => {},
-		hasDefaultValue: value => {},
-		relationName: value => {},
-		documentation: value => {},
-		isReadOnly: value => {},
-		isGenerated: value => {},
-		isUpdatedAt: value => value ? '@updatedAt' : '',
-		columnName: value => value ? `@map("${value}")` : ''
-	};
+      throw new Error(`Unsupported field attribute ${value}`);
+    },
+    isId: value => value ? '@id' : '',
+    isUnique: value => value ? '@unique' : '',
+    dbNames: value => { },
+    relationToFields: value => { },
+    relationOnDelete: value => { },
+    hasDefaultValue: value => { },
+    relationName: value => { },
+    documentation: value => { },
+    isReadOnly: value => { },
+    isGenerated: value => { },
+    isUpdatedAt: value => value ? '@updatedAt' : '',
+    columnName: value => value ? `@map("${value}")` : ''
+  };
 };
 
 // Handler for Attributes
 // https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema/data-model#attributes
-function handleAttributes(attributes: Attribute, kind: DMMF.DatamodelFieldKind | DMMF.FieldKind, type: string) {
-	const {relationFromFields, relationToFields, relationName} = attributes;
-	if (kind === 'scalar') {
-		return `${Object.keys(attributes).map(each => handlers(type, kind)[each](attributes[each])).join(' ')}`;
-	}
+function handleAttributes(attributes: Attribute, kind: DMMF.Datamodel | DMMF.FieldKind, type: string) {
+  const { relationFromFields, relationToFields, relationName } = attributes;
+  if (kind === 'scalar') {
+    return `${Object.keys(attributes).map(each => handlers(type, kind)[each](attributes[each])).join(' ')}`;
+  }
 
-	if (kind === 'object' && relationFromFields) {
-		return relationFromFields.length > 0 ?
-			`@relation(name: "${relationName}", fields: [${relationFromFields}], references: [${relationToFields}])` :
-			`@relation(name: "${relationName}")`;
-	}
+  if (kind === 'object' && relationFromFields) {
+    return relationFromFields.length > 0 ?
+      `@relation(name: "${relationName}", fields: [${relationFromFields}], references: [${relationToFields}])` :
+      `@relation(name: "${relationName}")`;
+  }
 
-	if (kind === 'enum')
-		return `${Object.keys(attributes).map(each => handlers(type, kind)[each](attributes[each])).join(' ')}`;
+  if (kind === 'enum')
+    return `${Object.keys(attributes).map(each => handlers(type, kind)[each](attributes[each])).join(' ')}`;
 
-	return '';
+  return '';
 }
 
 function handleFields(fields: Field[]) {
-	return fields
-		.map(fields => {
-			const {name, kind, type, isRequired, isList, ...attributes} = fields;
-			if (kind === 'scalar') {
-				return `  ${name} ${type}${isRequired ? '' : '?'} ${handleAttributes(attributes, kind, type)}`;
-			}
+  return fields
+    .map(fields => {
+      const { name, kind, type, isRequired, isList, ...attributes } = fields;
+      if (kind === 'scalar') {
+        return `  ${name} ${type}${isRequired ? '' : '?'} ${handleAttributes(attributes, kind, type)}`;
+      }
 
-			if (kind === 'object') {
-				return `  ${name} ${type}${isList ? '[]' : (isRequired ? '' : '?')} ${handleAttributes(attributes, kind, type)}`;
-			}
+      if (kind === 'object') {
+        return `  ${name} ${type}${isList ? '[]' : (isRequired ? '' : '?')} ${handleAttributes(attributes, kind, type)}`;
+      }
 
-			if (kind === 'enum') {
-				return `  ${name} ${type}${isList ? '[]' : (isRequired ? '' : '?')} ${handleAttributes(attributes, kind, type)}`;
-			}
+      if (kind === 'enum') {
+        return `  ${name} ${type}${isList ? '[]' : (isRequired ? '' : '?')} ${handleAttributes(attributes, kind, type)}`;
+      }
 
-			throw new Error(`Unsupported field kind "${kind}"`);
-		}).join('\n');
+      throw new Error(`Unsupported field kind "${kind}"`);
+    }).join('\n');
 }
 
 function handleIdFields(idFields: string[]) {
-	return idFields.length > 0 ? `@@id([${idFields.join(', ')}])` : '';
+  return idFields.length > 0 ? `@@id([${idFields.join(', ')}])` : '';
 }
 
 function handleUniqueFieds(uniqueFields: string[][]) {
-	return uniqueFields.length > 0 ? uniqueFields.map(eachUniqueField => `@@unique([${eachUniqueField.join(', ')}])`).join('\n') : '';
+  return uniqueFields.length > 0 ? uniqueFields.map(eachUniqueField => `@@unique([${eachUniqueField.join(', ')}])`).join('\n') : '';
 }
 
 function handleDbName(dbName: string | null) {
-	return dbName ? `@@map("${dbName}")` : '';
+  return dbName ? `@@map("${dbName}")` : '';
 }
 
 function handleUrl(envValue: EnvValue) {
-	const value = envValue.fromEnvVar ? `env("${envValue.fromEnvVar}")` : envValue.value;
+  const value = envValue.fromEnvVar ? `env("${envValue.fromEnvVar}")` : envValue.value;
 
-	return `url = ${value}`;
+  return `url = ${value}`;
 }
 
 function handleProvider(provider: ConnectorType | string) {
-	return `provider = "${provider}"`;
+  return `provider = "${provider}"`;
 }
 
 function handleOutput(path: string | null) {
-	return path ? `output = "${path}"` : '';
+  return path ? `output = "${path}"` : '';
 }
 
 function handleBinaryTargets(binaryTargets?: string[]) {
-	return binaryTargets?.length ? `binaryTargets = ${JSON.stringify(binaryTargets)}` : '';
+  return binaryTargets?.length ? `binaryTargets = ${JSON.stringify(binaryTargets)}` : '';
 }
 
 function deserializeModel(model: Model) {
-	const {name, uniqueFields, dbName, idFields} = model;
-	const fields = model.fields as unknown as Field[];
+  const { name, uniqueFields, dbName, idFields } = model;
+  const fields = model.fields as unknown as Field[];
 
-	const output = `
+  const output = `
 model ${name} {
 ${handleFields(fields)}
 ${handleUniqueFieds(uniqueFields)}
 ${handleDbName(dbName)}
 ${handleIdFields(idFields)}
 }`;
-	return output;
+  return output;
 }
 
 function deserializeDatasource(datasource: DataSource) {
-	const {activeProvider: provider, name, url} = datasource;
+  const { activeProvider: provider, name, url } = datasource;
 
-	return `
+  return `
 datasource ${name} {
 	${handleProvider(provider)}
 	${handleUrl(url)}
@@ -179,24 +179,24 @@ datasource ${name} {
 }
 
 function deserializeGenerator(generator: GeneratorConfig) {
-	const {binaryTargets, name, output, provider} = generator;
+  const { binaryTargets, name, output, provider } = generator;
 
-	return `
+  return `
 generator ${name} {
-	${handleProvider(provider)}
-	${handleOutput(output)}
+	${handleProvider(provider.value)}
+	${output ? handleOutput(output?.value) : ''}
 	${handleBinaryTargets(binaryTargets)}
 }`;
 }
 
-function deserializeEnum({name, values, dbName}: DMMF.DatamodelEnum) {
-	const outputValues = values.map(({ name, dbName }) => {
-		let result = name
-		if (name !== dbName && dbName)
-			result += `@map("${dbName}")`
-		return result
-	})
-	return `
+function deserializeEnum({ name, values, dbName }: DMMF.DatamodelEnum) {
+  const outputValues = values.map(({ name, dbName }) => {
+    let result = name
+    if (name !== dbName && dbName)
+      result += `@map("${dbName}")`
+    return result
+  })
+  return `
 enum ${name} {
 	${outputValues.join('\n\t')}
 	${handleDbName(dbName || null)}
@@ -207,17 +207,17 @@ enum ${name} {
  * Deserialize DMMF.Model[] into prisma schema file
  */
 export async function dmmfModelsdeserializer(models: Model[]) {
-	return models.map(model => deserializeModel(model)).join('\n');
+  return models.map(model => deserializeModel(model)).join('\n');
 }
 
 export async function datasourcesDeserializer(datasources: DataSource[]) {
-	return datasources.map(datasource => deserializeDatasource(datasource)).join('\n');
+  return datasources.map(datasource => deserializeDatasource(datasource)).join('\n');
 }
 
 export async function generatorsDeserializer(generators: GeneratorConfig[]) {
-	return generators.map(generator => deserializeGenerator(generator)).join('\n');
+  return generators.map(generator => deserializeGenerator(generator)).join('\n');
 }
 
 export async function dmmfEnumsDeserializer(enums: DMMF.DatamodelEnum[]) {
-	return enums.map(each => deserializeEnum(each)).join('\n');
+  return enums.map(each => deserializeEnum(each)).join('\n');
 }

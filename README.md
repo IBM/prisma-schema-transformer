@@ -68,6 +68,13 @@ Manipulate the naming of Model and Field to follow the `camelCase` naming conven
 - Model name is always singular.
 - Field name is singular by default with the execption of `many-to-many` relation.
 
+## Test
+
+```bash
+$ docker run -itd --name postgres --restart always -e ALLOW_IP_RANGE=0.0.0.0/0 -e POSTGRES_HOST_AUTH_METHOD=trust -p 5433:5432 postgres
+$ yarn test
+```
+
 ## License
 
 This project is [MIT licensed](./LICENSE).
