@@ -1,7 +1,7 @@
 import {ConnectorType, DataSource, DMMF, EnvValue, GeneratorConfig} from '@prisma/generator-helper/dist';
 
 export interface Field {
-	kind: DMMF.DatamodelFieldKind | DMMF.FieldKind;
+	kind: DMMF.FieldKind;
 	name: string;
 	isRequired: boolean;
 	isList: boolean;
@@ -86,7 +86,7 @@ const handlers = (type, kind) => {
 
 // Handler for Attributes
 // https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema/data-model#attributes
-function handleAttributes(attributes: Attribute, kind: DMMF.DatamodelFieldKind | DMMF.FieldKind, type: string) {
+function handleAttributes(attributes: Attribute, kind: DMMF.FieldKind, type: string) {
 	const {relationFromFields, relationToFields, relationName} = attributes;
 	if (kind === 'scalar') {
 		return `${Object.keys(attributes).map(each => handlers(type, kind)[each](attributes[each])).join(' ')}`;
@@ -183,8 +183,8 @@ function deserializeGenerator(generator: GeneratorConfig) {
 
 	return `
 generator ${name} {
-	${handleProvider(provider)}
-	${handleOutput(output)}
+	${handleProvider(provider.value)}
+	${handleOutput(output?.value || null)}
 	${handleBinaryTargets(binaryTargets)}
 }`;
 }
