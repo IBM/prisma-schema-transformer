@@ -154,6 +154,10 @@ function handleBinaryTargets(binaryTargets?: string[]) {
 	return binaryTargets?.length ? `binaryTargets = ${JSON.stringify(binaryTargets)}` : '';
 }
 
+function handlePreviewFeatures(previewFeatures: GeneratorConfig['previewFeatures']) {
+	return previewFeatures.length ? `previewFeatures = ${JSON.stringify(previewFeatures)}` : '';
+}
+
 function deserializeModel(model: Model) {
 	const {name, uniqueFields, dbName, idFields} = model;
 	const fields = model.fields as unknown as Field[];
@@ -179,13 +183,14 @@ datasource ${name} {
 }
 
 function deserializeGenerator(generator: GeneratorConfig) {
-	const {binaryTargets, name, output, provider} = generator;
+	const {binaryTargets, name, output, provider, previewFeatures} = generator;
 
 	return `
 generator ${name} {
 	${handleProvider(provider.value)}
 	${handleOutput(output?.value || null)}
 	${handleBinaryTargets(binaryTargets)}
+	${handlePreviewFeatures(previewFeatures)}
 }`;
 }
 
