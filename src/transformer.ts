@@ -63,7 +63,7 @@ function transformModel(model: Model) {
 	});
 
 	const fixIdFieldsName = produce(fixUniqueName, draftModel => {
-		if (idFields.length > 0) {
+		if (idFields && idFields.length > 0) {
 			draftModel.idFields = idFields.map(eachIdField => camelcase(eachIdField));
 		}
 	});

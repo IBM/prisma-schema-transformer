@@ -1,6 +1,6 @@
 # prisma-schema-transformer
 
-> **EXPERIMENTAL**
+> **EXPERIMENTAL FOR PRISMA V3**
 
 This project utilizes the [getDMMF](https://github.com/prisma/prisma/blob/023249752380976d797518e1350199895246d099/src/packages/sdk/src/engineCommands.ts#L45) method from `@prisma/sdk` to perform some post-processing work on generated Prisma schema, including the following.
 
