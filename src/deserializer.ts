@@ -1,4 +1,5 @@
 import {ConnectorType, DataSource, DMMF, EnvValue, GeneratorConfig} from '@prisma/generator-helper/dist';
+import {printGeneratorConfig} from '@prisma/engine-core';
 
 export interface Field {
 	kind: DMMF.FieldKind;
@@ -125,7 +126,7 @@ function handleFields(fields: Field[]) {
 }
 
 function handleIdFields(idFields: string[]) {
-	return idFields.length > 0 ? `@@id([${idFields.join(', ')}])` : '';
+	return idFields && idFields.length > 0 ? `@@id([${idFields.join(', ')}])` : '';
 }
 
 function handleUniqueFieds(uniqueFields: string[][]) {
@@ -144,18 +145,6 @@ function handleUrl(envValue: EnvValue) {
 
 function handleProvider(provider: ConnectorType | string) {
 	return `provider = "${provider}"`;
-}
-
-function handleOutput(path: string | null) {
-	return path ? `output = "${path}"` : '';
-}
-
-function handleBinaryTargets(binaryTargets?: string[]) {
-	return binaryTargets?.length ? `binaryTargets = ${JSON.stringify(binaryTargets)}` : '';
-}
-
-function handlePreviewFeatures(previewFeatures: GeneratorConfig['previewFeatures']) {
-	return previewFeatures.length ? `previewFeatures = ${JSON.stringify(previewFeatures)}` : '';
 }
 
 function deserializeModel(model: Model) {
@@ -179,18 +168,6 @@ function deserializeDatasource(datasource: DataSource) {
 datasource ${name} {
 	${handleProvider(provider)}
 	${handleUrl(url)}
-}`;
-}
-
-function deserializeGenerator(generator: GeneratorConfig) {
-	const {binaryTargets, name, output, provider, previewFeatures} = generator;
-
-	return `
-generator ${name} {
-	${handleProvider(provider.value)}
-	${handleOutput(output?.value || null)}
-	${handleBinaryTargets(binaryTargets)}
-	${handlePreviewFeatures(previewFeatures)}
 }`;
 }
 
@@ -220,7 +197,7 @@ export async function datasourcesDeserializer(datasources: DataSource[]) {
 }
 
 export async function generatorsDeserializer(generators: GeneratorConfig[]) {
-	return generators.map(generator => deserializeGenerator(generator)).join('\n');
+	return generators.map(generator => printGeneratorConfig(generator)).join('\n');
 }
 
 export async function dmmfEnumsDeserializer(enums: DMMF.DatamodelEnum[]) {
