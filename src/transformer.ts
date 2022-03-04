@@ -53,7 +53,7 @@ function transformModel(model: Model) {
 			if (name === 'updated_at') {
 				draftField.isUpdatedAt = true;
 			}
-		})) as DMMF.Field[]; // Force type conversion
+		})) as unknown as DMMF.Field[]; // Force type conversion
 	});
 
 	const fixUniqueName = produce(fixFieldsName, draftModel => {
